@@ -43,6 +43,7 @@ import com.google.common.io.ByteStreams;
 
 /**
  * Build an OSGi distribution package from an Eclipse Feature
+ * 
  * @author Jens Reimann
  */
 @Mojo(name = "build", defaultPhase = LifecyclePhase.PACKAGE, requiresProject = true, requiresDependencyResolution = ResolutionScope.COMPILE, requiresDependencyCollection = ResolutionScope.COMPILE, threadSafe = false)
@@ -77,9 +78,9 @@ public class BuildMojo extends AbstractMojo {
 		if (this.skip)
 			return;
 
-		getLog().info("Building DP");
-
 		final String dpVersion = makeVersion(true);
+
+		getLog().info("Building DP - Version: " + dpVersion);
 
 		final Manifest dpmf = new Manifest();
 		dpmf.getMainAttributes().put(Attributes.Name.MANIFEST_VERSION, "1");
@@ -114,7 +115,7 @@ public class BuildMojo extends AbstractMojo {
 			}
 
 			final String dpName = String.format("%s_%s.dp", this.project.getArtifactId(),
-					makeVersion(useQualifiedFilename));
+					makeVersion(this.useQualifiedFilename));
 			final Path out = Paths.get(this.project.getBuild().getDirectory(), dpName);
 
 			getLog().info("Writing to: " + out);
@@ -148,11 +149,15 @@ public class BuildMojo extends AbstractMojo {
 	}
 
 	private String makeVersion(boolean qualified) {
-		final ReactorProject rp = (ReactorProject) this.project.getContextValue(ReactorProject.CTX_REACTOR_PROJECT);
 		if (qualified) {
+			final ReactorProject rp = (ReactorProject) this.project.getContextValue(ReactorProject.CTX_REACTOR_PROJECT);
+			if (rp == null) {
+				throw new IllegalStateException(
+						"Failed to get qualified project version. On non-tycho projects set 'useQualifiedFilename' to 'false'");
+			}
 			return rp.getExpandedVersion();
 		} else {
-			return rp.getVersion();
+			return this.project.getVersion();
 		}
 	}
 }
