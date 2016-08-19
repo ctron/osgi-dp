@@ -1,4 +1,4 @@
-# RPM builder plugin ![Build status](https://api.travis-ci.org/ctron/osgi-dp.svg "Travis Build Status") ![Maven Central](https://img.shields.io/maven-central/v/de.dentrassi.maven/osgi-dp.svg "Maven Central Status")
+# RPM builder plugin [![Build status](https://api.travis-ci.org/ctron/rpm-builder.svg)](https://travis-ci.org/ctron/osgi-dp) ![Maven Central](https://img.shields.io/maven-central/v/de.dentrassi.maven/osgi-dp.svg "Maven Central Status")
 
 This is a small plugin which created OSGi DP archives based on an Eclipse Tycho P2 feature.
 
