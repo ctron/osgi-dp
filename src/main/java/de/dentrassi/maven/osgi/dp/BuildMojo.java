@@ -18,15 +18,23 @@ import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.jar.Attributes;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 import java.util.jar.JarOutputStream;
 import java.util.jar.Manifest;
 
+import org.apache.maven.artifact.repository.ArtifactRepository;
 import org.apache.maven.execution.MavenSession;
+import org.apache.maven.model.Dependency;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
@@ -37,23 +45,31 @@ import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.plugins.annotations.ResolutionScope;
 import org.apache.maven.project.MavenProject;
 import org.apache.maven.project.MavenProjectHelper;
-import org.eclipse.tycho.ArtifactDescriptor;
+import org.eclipse.aether.RepositorySystem;
+import org.eclipse.aether.RepositorySystemSession;
+import org.eclipse.aether.artifact.DefaultArtifact;
+import org.eclipse.aether.graph.DefaultDependencyNode;
+import org.eclipse.aether.impl.ArtifactResolver;
+import org.eclipse.aether.resolution.ArtifactRequest;
+import org.eclipse.aether.resolution.ArtifactResolutionException;
+import org.eclipse.aether.resolution.ArtifactResult;
+import org.eclipse.aether.util.artifact.JavaScopes;
 import org.eclipse.tycho.ReactorProject;
-import org.eclipse.tycho.core.ArtifactDependencyVisitor;
-import org.eclipse.tycho.core.ArtifactDependencyWalker;
 import org.eclipse.tycho.core.DependencyResolver;
-import org.eclipse.tycho.core.FeatureDescription;
-import org.eclipse.tycho.core.PluginDescription;
 import org.eclipse.tycho.core.TychoProject;
 
 import com.google.common.io.ByteStreams;
 
+import de.dentrassi.maven.osgi.dp.internal.ArtifactWalker;
+import de.dentrassi.maven.osgi.dp.internal.ProjectWalker;
+import de.dentrassi.maven.osgi.dp.internal.TychoWalker;
+
 /**
- * Build an OSGi distribution package from an Eclipse Feature
+ * Build an OSGi distribution package
  *
  * @author Jens Reimann
  */
-@Mojo(name = "build", defaultPhase = LifecyclePhase.PACKAGE, requiresProject = true, requiresDependencyResolution = ResolutionScope.COMPILE, requiresDependencyCollection = ResolutionScope.COMPILE, threadSafe = false)
+@Mojo(name = "build", defaultPhase = LifecyclePhase.PACKAGE, requiresProject = true, requiresDependencyResolution = ResolutionScope.RUNTIME, requiresDependencyCollection = ResolutionScope.RUNTIME, threadSafe = false)
 public class BuildMojo extends AbstractMojo {
 
     /**
@@ -65,8 +81,14 @@ public class BuildMojo extends AbstractMojo {
     @Parameter(defaultValue = "${session}", readonly = true, required = true)
     private MavenSession session;
 
-    @Parameter(defaultValue = "true")
-    protected boolean useQualifiedFilename = true;
+    @Component
+    private RepositorySystem repoSystem;
+
+    @Parameter(defaultValue = "${repositorySystemSession}", readonly = true, required = true)
+    private RepositorySystemSession repositorySession;
+
+    @Parameter(defaultValue = "false")
+    protected boolean useQualifiedFilename = false;
 
     @Parameter(defaultValue = "true")
     protected boolean attach = true;
@@ -80,18 +102,39 @@ public class BuildMojo extends AbstractMojo {
     @Component
     private DependencyResolver dependencyResolver;
 
+    private final Set<String> tychoWalkerProjects = new HashSet<>(Arrays.asList("eclipse-feature"));
+
     @Component(role = TychoProject.class)
     private Map<String, TychoProject> projectTypes;
 
-    protected ArtifactDependencyWalker lookupDependencyWalker() {
+    /**
+     * Additional dependencies to package
+     */
+    @Parameter
+    private Dependency[] additionalDependencies;
+
+    @Component
+    private ArtifactResolver resolver;
+
+    @Parameter(property = "localRepository")
+    private ArtifactRepository localRepository;
+
+    @Parameter(property = "project.remoteArtifactRepositories")
+    private List<ArtifactRepository> remoteRepositories;
+
+    protected ArtifactWalker lookupDependencyWalker() {
         final String packaging = this.project.getPackaging();
+
+        if (!this.tychoWalkerProjects.contains(packaging)) {
+            return new ProjectWalker(this.project);
+        }
 
         final TychoProject facet = this.projectTypes.get(packaging);
         if (facet == null) {
             throw new IllegalStateException(format("Unknown packaging '%s'", packaging));
         }
 
-        return facet.getDependencyWalker(this.project);
+        return new TychoWalker(facet.getDependencyWalker(this.project), getLog());
     }
 
     @Override
@@ -100,7 +143,7 @@ public class BuildMojo extends AbstractMojo {
             return;
         }
 
-        final String dpVersion = makeVersion(true);
+        final String dpVersion = makeVersion(this.useQualifiedFilename);
 
         getLog().info("Building DP - Version: " + dpVersion);
 
@@ -148,51 +191,43 @@ public class BuildMojo extends AbstractMojo {
         }
     }
 
-    private void fillFromDependencies(final Manifest dpmf, final Map<String, File> files) throws IOException {
+    private void fillFromDependencies(final Manifest dpmf, final Map<String, File> files)
+            throws IOException, MojoExecutionException {
 
-        final ArtifactDependencyWalker dw = lookupDependencyWalker();
-        dw.walk(new ArtifactDependencyVisitor() {
-            @Override
-            public boolean visitFeature(final FeatureDescription feature) {
-                return true;
-            }
+        // from dependency walker
 
-            @Override
-            public void visitPlugin(final PluginDescription plugin) {
-                try {
-                    considerArtifact(dpmf, files, plugin);
-                } catch (final IOException e) {
-                    throw new RuntimeException(e);
+        final ArtifactWalker dw = lookupDependencyWalker();
+        dw.walk(entry -> processArtifact(dpmf, files, entry.getLocation().toFile()));
+
+        // additional dependencies
+
+        if (this.additionalDependencies != null) {
+
+            try {
+                final Collection<ArtifactRequest> requests = new ArrayList<>(this.additionalDependencies.length);
+
+                for (final Dependency dep : this.additionalDependencies) {
+                    final DefaultArtifact art = new DefaultArtifact(dep.getGroupId(), dep.getArtifactId(),
+                            dep.getClassifier(), dep.getType(), dep.getVersion());
+                    final org.eclipse.aether.graph.Dependency adep = new org.eclipse.aether.graph.Dependency(art,
+                            JavaScopes.RUNTIME);
+                    requests.add(new ArtifactRequest(new DefaultDependencyNode(adep)));
                 }
+
+                final List<ArtifactResult> result = this.resolver.resolveArtifacts(this.repositorySession, requests);
+
+                for (final ArtifactResult ares : result) {
+                    getLog().debug("Additional dependency: " + ares);
+                    processArtifact(dpmf, files, ares.getArtifact().getFile());
+                }
+            } catch (final ArtifactResolutionException e) {
+                throw new MojoExecutionException("Failed to resolve additional dependencies", e);
             }
-        });
+        }
     }
 
-    private void considerArtifact(final Manifest dpmf, final Map<String, File> files, final ArtifactDescriptor art)
+    private void processArtifact(final Manifest dpmf, final Map<String, File> files, final File location)
             throws IOException {
-        getLog().debug(format("Considering artifact: %s", art));
-
-        if (!"eclipse-plugin".equalsIgnoreCase(art.getKey().getType())) {
-            getLog().debug(format("Not a JAR file -> %s", art.getKey().getType()));
-            return;
-        }
-
-        final File location;
-        final ReactorProject p = art.getMavenProject();
-        if (p != null) {
-            location = p.getArtifact();
-        } else {
-            location = art.getLocation();
-        }
-
-        if (location == null) {
-            getLog().warn(format("Unable to locate artifact: %s", art));
-        }
-
-        if (!location.isFile()) {
-            getLog().warn(format("Location '%s' is not a file", location));
-            return;
-        }
 
         try (JarFile jar = new JarFile(location)) {
             final Manifest mf = jar.getManifest();
