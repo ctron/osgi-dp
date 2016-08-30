@@ -292,12 +292,12 @@ public class BuildMojo extends AbstractMojo {
             final ReactorProject rp = (ReactorProject) this.project.getContextValue(ReactorProject.CTX_REACTOR_PROJECT);
             return new Version(rp.getExpandedVersion());
         } catch (final Exception e) {
-            getLog().info("Failed to get qualified tycho version", e);
+            getLog().debug("Failed to get qualified tycho version", e);
         }
 
-        final String version = this.project.getVersion();
+        String version = this.project.getVersion();
         if (version.endsWith("-SNAPSHOT")) {
-            version.replaceAll("-SNAPSHOT$", TIMESTAMP_FORMAT.format("." + this.session.getStartTime()));
+            version = version.replaceAll("-SNAPSHOT$", "." + TIMESTAMP_FORMAT.format(this.session.getStartTime()));
         }
 
         return new Version(version);
