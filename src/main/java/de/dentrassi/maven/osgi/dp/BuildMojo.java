@@ -18,6 +18,8 @@ import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -57,6 +59,7 @@ import org.eclipse.aether.util.artifact.JavaScopes;
 import org.eclipse.tycho.ReactorProject;
 import org.eclipse.tycho.core.DependencyResolver;
 import org.eclipse.tycho.core.TychoProject;
+import org.osgi.framework.Version;
 
 import com.google.common.io.ByteStreams;
 
@@ -71,6 +74,8 @@ import de.dentrassi.maven.osgi.dp.internal.TychoWalker;
  */
 @Mojo(name = "build", defaultPhase = LifecyclePhase.PACKAGE, requiresProject = true, requiresDependencyResolution = ResolutionScope.RUNTIME, requiresDependencyCollection = ResolutionScope.RUNTIME, threadSafe = false)
 public class BuildMojo extends AbstractMojo {
+
+    private final static DateFormat TIMESTAMP_FORMAT = new SimpleDateFormat("yyyyMMddHHmmss");
 
     /**
      * The maven project
@@ -122,6 +127,9 @@ public class BuildMojo extends AbstractMojo {
     @Parameter(property = "project.remoteArtifactRepositories")
     private List<ArtifactRepository> remoteRepositories;
 
+    @Parameter(property = "version")
+    private String version;
+
     protected ArtifactWalker lookupDependencyWalker() {
         final String packaging = this.project.getPackaging();
 
@@ -137,13 +145,17 @@ public class BuildMojo extends AbstractMojo {
         return new TychoWalker(facet.getDependencyWalker(this.project), getLog());
     }
 
+    public void setVersion(final String version) {
+        this.version = Version.parseVersion(version).toString();
+    }
+
     @Override
     public void execute() throws MojoExecutionException, MojoFailureException {
         if (this.skip) {
             return;
         }
 
-        final String dpVersion = makeVersion(this.useQualifiedFilename);
+        final String dpVersion = makeVersion(true);
 
         getLog().info("Building DP - Version: " + dpVersion);
 
@@ -157,8 +169,7 @@ public class BuildMojo extends AbstractMojo {
 
             fillFromDependencies(dpmf, files);
 
-            final String dpName = String.format("%s_%s.dp", this.project.getArtifactId(),
-                    makeVersion(this.useQualifiedFilename));
+            final String dpName = String.format("%s_%s.dp", this.project.getArtifactId(), makeVersion(false));
             final Path out = Paths.get(this.project.getBuild().getDirectory(), dpName);
 
             getLog().info("Writing to: " + out);
@@ -260,16 +271,35 @@ public class BuildMojo extends AbstractMojo {
         }
     }
 
-    private String makeVersion(final boolean qualified) {
-        if (qualified) {
-            final ReactorProject rp = (ReactorProject) this.project.getContextValue(ReactorProject.CTX_REACTOR_PROJECT);
-            if (rp == null) {
-                throw new IllegalStateException(
-                        "Failed to get qualified project version. On non-tycho projects set 'useQualifiedFilename' to 'false'");
-            }
-            return rp.getExpandedVersion();
+    private String makeVersion(final boolean osgiVersion) {
+        if (this.version != null) {
+            return this.version.toString();
+        }
+
+        if (this.useQualifiedFilename) {
+            return makeQualifiedVersion().toString();
+        }
+
+        if (osgiVersion) {
+            return makeQualifiedVersion().toString();
         } else {
             return this.project.getVersion();
         }
+    }
+
+    private Version makeQualifiedVersion() {
+        try {
+            final ReactorProject rp = (ReactorProject) this.project.getContextValue(ReactorProject.CTX_REACTOR_PROJECT);
+            return new Version(rp.getExpandedVersion());
+        } catch (final Exception e) {
+            getLog().info("Failed to get qualified tycho version", e);
+        }
+
+        final String version = this.project.getVersion();
+        if (version.endsWith("-SNAPSHOT")) {
+            version.replaceAll("-SNAPSHOT$", TIMESTAMP_FORMAT.format("." + this.session.getStartTime()));
+        }
+
+        return new Version(version);
     }
 }
