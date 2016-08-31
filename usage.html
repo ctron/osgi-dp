@@ -9,7 +9,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="Date-Revision-yyyymmdd" content="20160831" />
     <meta http-equiv="Content-Language" content="en" />
-    <title>OSGi distribution package builder &#x2013; Introduction</title>
+    <title>OSGi distribution package builder &#x2013; Usage</title>
     <link rel="stylesheet" href="./css/apache-maven-fluido-1.5.min.css" />
     <link rel="stylesheet" href="./css/site.css" />
     <link rel="stylesheet" href="./css/print.css" media="print" />
@@ -56,10 +56,12 @@
                 <ul class="nav nav-list">
                     <li class="nav-header">Overview</li>
                               
-      <li class="active">
+      <li>
   
-            <a href="#"><span class="none"></span>Introduction</a>
-          </li>
+                          <a href="index.html" title="Introduction">
+          <span class="none"></span>
+        Introduction</a>
+            </li>
                 
       <li>
   
@@ -68,97 +70,18 @@
         Goals</a>
             </li>
                 
-      <li>
+      <li class="active">
   
-                          <a href="usage.html" title="Usage">
-          <span class="none"></span>
-        Usage</a>
-            </li>
+            <a href="#"><span class="none"></span>Usage</a>
+          </li>
                               <li class="nav-header">Project Documentation</li>
-                                                                                                                                                                                                                                                                              
+                                                                                                                                                                                                                                                                    
       <li>
   
                           <a href="project-info.html" title="Project Information">
-          <span class="icon-chevron-down"></span>
+          <span class="icon-chevron-right"></span>
         Project Information</a>
-                    <ul class="nav nav-list">
-                    
-      <li>
-  
-                          <a href="dependencies.html" title="Dependencies">
-          <span class="none"></span>
-        Dependencies</a>
-            </li>
-                    
-      <li>
-  
-                          <a href="dependency-info.html" title="Dependency Information">
-          <span class="none"></span>
-        Dependency Information</a>
-            </li>
-                    
-      <li>
-  
-                          <a href="distribution-management.html" title="Distribution Management">
-          <span class="none"></span>
-        Distribution Management</a>
-            </li>
-                    
-      <li class="active">
-  
-            <a href="#"><span class="none"></span>About</a>
-          </li>
-                    
-      <li>
-  
-                          <a href="issue-tracking.html" title="Issue Management">
-          <span class="none"></span>
-        Issue Management</a>
-            </li>
-                    
-      <li>
-  
-                          <a href="license.html" title="Licenses">
-          <span class="none"></span>
-        Licenses</a>
-            </li>
-                    
-      <li>
-  
-                          <a href="plugin-management.html" title="Plugin Management">
-          <span class="none"></span>
-        Plugin Management</a>
-            </li>
-                    
-      <li>
-  
-                          <a href="plugins.html" title="Plugins">
-          <span class="none"></span>
-        Plugins</a>
-            </li>
-                    
-      <li>
-  
-                          <a href="team-list.html" title="Team">
-          <span class="none"></span>
-        Team</a>
-            </li>
-                    
-      <li>
-  
-                          <a href="source-repository.html" title="Source Code Management">
-          <span class="none"></span>
-        Source Code Management</a>
-            </li>
-                    
-      <li>
-  
-                          <a href="project-summary.html" title="Summary">
-          <span class="none"></span>
-        Summary</a>
-            </li>
-              </ul>
-        </li>
+                  </li>
                                                                                     
       <li>
   
@@ -208,21 +131,39 @@
                 
         <div id="bodyColumn"  class="span10" >
                                   
-            <h1>Introduction</h1>
-<p>The OSGi DP Maven plugin created an OSGi deployment package based on the configuration of an Eclipse Tycho&#x2122; feature project, bundle project or any other Maven Java project.</p>
-<p>The plugins goal <tt>build</tt> will, in addition to the feature which Tycho provides, create a DP archive containing all directly included bundles. This includes bundles included by included features (no kidding).</p>
-<p>Features may reference dependencies either as &#x201c;included&#x201d; or &#x201c;required&#x201d;. Dependencies which are &#x201c;included&#x201d; become part of that feature. This is honored by the OSGi DP plugin. It will traverse through all dependencies and only include dependencies which are marked as &#x201c;included&#x201d;. If the dependency is a feature and it is &#x201c;included&#x201d;, then its features and bundles will be considered as well.</p>
-<p>In addition is it possible to specify a list of &#x201c;additional dependencies&#x201d; which will be included.</p>
+            <h1>Usage</h1>
+<p>The following sections show how the OSGi DP packager can be used.</p>
 <div class="section">
-<h2><a name="Contributing"></a>Contributing</h2>
-<p>All contributions are welcome!</p></div>
-<div class="section">
-<h2><a name="See_also"></a>See also</h2>
+<h2><a name="Common"></a>Common</h2>
+<p>Add the following execution to project in order to build a DP:</p>
 
-<ul>
-  
-<li><a class="externalLink" href="https://eclipse.org/tycho">Eclipse Tycho&#x2122;</a></li>
-</ul></div>
+<div class="source">
+<div class="source"><pre class="prettyprint">&lt;plugins&gt;
+    &#x2026;
+    &lt;plugin&gt;
+        &lt;groupId&gt;de.dentrassi.maven&lt;/groupId&gt;
+        &lt;artifactId&gt;osgi-dp&lt;/artifactId&gt;
+        &lt;executions&gt;
+            &lt;execution&gt;
+                &lt;goals&gt;
+                    &lt;goal&gt;build&lt;/goal&gt;
+                &lt;/goals&gt;
+            &lt;/execution&gt;
+        &lt;/executions&gt;
+    &lt;/plugin&gt;
+    &#x2026;
+&lt;/plugins&gt;
+</pre></div></div></div>
+<div class="section">
+<h2><a name="Tycho_Feature"></a>Tycho Feature</h2>
+<p>Adding the <tt>build</tt> goal to an <tt>eclipse-feature</tt> type project will create a DP based on the directly included plugins of a feature. It will traverse all included features for bundle lookup as well.</p>
+<p>Referenced bundles and features will be ignored.</p></div>
+<div class="section">
+<h2><a name="Tycho_Plugin"></a>Tycho Plugin</h2>
+<p>Adding the <tt>build</tt> goal to an <tt>eclipse-plugin</tt> type project will create a DP based on the current bundle. No dependencies will be added, unless they are adding using the &#x201c;additional dependencies&#x201d; feature. </p></div>
+<div class="section">
+<h2><a name="Maven_Bundle_Plugin"></a>Maven Bundle Plugin</h2>
+<p>Adding the <tt>build</tt> goal to an <tt>bundle</tt> type project (maven-bundle-plugin) will create a DP like using the <tt>eclipse-plugin</tt> target. Only it is not possible to use a qualified filename as output.</p></div>
                   </div>
             </div>
           </div>
