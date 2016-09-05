@@ -69,16 +69,6 @@ import de.dentrassi.maven.osgi.dp.internal.TychoWalker;
 
 /**
  * Build an OSGi distribution package
- * <h3>Qualified Version</h3>
- * <p>
- * In some situations the plugin needs a qualified OSGi version. The plugin will
- * first use the explicitly provided version. If this is not set then the plugin
- * will generate a qualified version. First it will re-use a qualified OSGi
- * version from Tycho if the project is built using Tycho. Otherwise the
- * project's version is used and the <code>-SNAPSHOT</code> suffix will be
- * removed by the current timestamp. This also means that non
- * <code>-SNAPSHOT</code> versions have to be OSGi compliant.
- * </p>
  *
  * @author Jens Reimann
  */
