@@ -69,6 +69,16 @@ import de.dentrassi.maven.osgi.dp.internal.TychoWalker;
 
 /**
  * Build an OSGi distribution package
+ * <h3>Qualified Version</h3>
+ * <p>
+ * In some situations the plugin needs a qualified OSGi version. The plugin will
+ * first use the explicitly provided version. If this is not set then the plugin
+ * will generate a qualified version. First it will re-use a qualified OSGi
+ * version from Tycho if the project is built using Tycho. Otherwise the
+ * project's version is used and the <code>-SNAPSHOT</code> suffix will be
+ * removed by the current timestamp. This also means that non
+ * <code>-SNAPSHOT</code> versions have to be OSGi compliant.
+ * </p>
  *
  * @author Jens Reimann
  */
@@ -92,12 +102,25 @@ public class BuildMojo extends AbstractMojo {
     @Parameter(defaultValue = "${repositorySystemSession}", readonly = true, required = true)
     private RepositorySystemSession repositorySession;
 
+    /**
+     * Whether or not to use a qualified target filename
+     * <p>
+     * By default the project version will be used as filename. If this property
+     * is set to <code>true</code> then the qualified OSGi version will be used.
+     * </p>
+     */
     @Parameter(defaultValue = "false")
     protected boolean useQualifiedFilename = false;
 
+    /**
+     * Whether or not the resulting DP should be attached to the project output
+     */
     @Parameter(defaultValue = "true")
     protected boolean attach = true;
 
+    /**
+     * Skip the generation of the DP
+     */
     @Parameter(defaultValue = "false", property = "osgi-dp.skip")
     protected boolean skip = false;
 
@@ -121,12 +144,22 @@ public class BuildMojo extends AbstractMojo {
     @Component
     private ArtifactResolver resolver;
 
-    @Parameter(property = "localRepository")
+    @Parameter(property = "localRepository", readonly = true)
     private ArtifactRepository localRepository;
 
-    @Parameter(property = "project.remoteArtifactRepositories")
+    @Parameter(property = "project.remoteArtifactRepositories", readonly = true)
     private List<ArtifactRepository> remoteRepositories;
 
+    /**
+     * An optional explicit version
+     * <p>
+     * <strong>Note:</strong> This version must be a valid OSGi version
+     * </p>
+     * <p>
+     * By default the version of the project will be used. The -SNAPSHOT suffix
+     * will be replaced by the current timestamp.
+     * </p>
+     */
     @Parameter(property = "version")
     private String version;
 
