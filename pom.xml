@@ -395,16 +395,6 @@
 							<pomIncludes>
 								<pomInclude>*/pom.xml</pomInclude>
 							</pomIncludes>
-                            <profiles>
-                            <!-- 
-                                <profile>sign</profile>
-                            -->
-                            </profiles>
-							<properties>
-								<!-- forward properties -->
-								<keyId>${keyId}</keyId>
-								<passphrase>${passphrase}</passphrase>
-							</properties>
 						</configuration>
 						<executions>
 							<execution>
