@@ -9,7 +9,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="Date-Revision-yyyymmdd" content="20160920" />
     <meta http-equiv="Content-Language" content="en" />
-    <title>OSGi distribution package builder &#x2013; Source Code Management</title>
+    <title>OSGi distribution package builder &#x2013; osgi-dp:package</title>
     <link rel="stylesheet" href="./css/apache-maven-fluido-1.5.min.css" />
     <link rel="stylesheet" href="./css/site.css" />
     <link rel="stylesheet" href="./css/print.css" media="print" />
@@ -98,90 +98,13 @@
         Qualified Version</a>
             </li>
                               <li class="nav-header">Project Documentation</li>
-                                                                                                                                                                                                                                                                              
+                                                                                                                                                                                                                                                                    
       <li>
   
                           <a href="project-info.html" title="Project Information">
-          <span class="icon-chevron-down"></span>
+          <span class="icon-chevron-right"></span>
         Project Information</a>
-                    <ul class="nav nav-list">
-                    
-      <li>
-  
-                          <a href="dependencies.html" title="Dependencies">
-          <span class="none"></span>
-        Dependencies</a>
-            </li>
-                    
-      <li>
-  
-                          <a href="dependency-info.html" title="Dependency Information">
-          <span class="none"></span>
-        Dependency Information</a>
-            </li>
-                    
-      <li>
-  
-                          <a href="distribution-management.html" title="Distribution Management">
-          <span class="none"></span>
-        Distribution Management</a>
-            </li>
-                    
-      <li>
-  
-                          <a href="index.html" title="About">
-          <span class="none"></span>
-        About</a>
-            </li>
-                    
-      <li>
-  
-                          <a href="issue-tracking.html" title="Issue Management">
-          <span class="none"></span>
-        Issue Management</a>
-            </li>
-                    
-      <li>
-  
-                          <a href="license.html" title="Licenses">
-          <span class="none"></span>
-        Licenses</a>
-            </li>
-                    
-      <li>
-  
-                          <a href="plugin-management.html" title="Plugin Management">
-          <span class="none"></span>
-        Plugin Management</a>
-            </li>
-                    
-      <li>
-  
-                          <a href="plugins.html" title="Plugins">
-          <span class="none"></span>
-        Plugins</a>
-            </li>
-                    
-      <li>
-  
-                          <a href="team-list.html" title="Team">
-          <span class="none"></span>
-        Team</a>
-            </li>
-                    
-      <li class="active">
-  
-            <a href="#"><span class="none"></span>Source Code Management</a>
-          </li>
-                    
-      <li>
-  
-                          <a href="project-summary.html" title="Summary">
-          <span class="none"></span>
-        Summary</a>
-            </li>
-              </ul>
-        </li>
+                  </li>
                                                                                     
       <li>
   
@@ -231,24 +154,192 @@
                 
         <div id="bodyColumn"  class="span10" >
                                   
-            <div class="section">
-<h2><a name="Overview"></a>Overview</h2><a name="Overview"></a>
-<p>This project uses <a class="externalLink" href="http://git-scm.com/">Git</a> to manage its source code. Instructions on Git use can be found at <a class="externalLink" href="http://git-scm.com/documentation">http://git-scm.com/documentation</a>.</p></div>
+            
+  
+    <div class="section">
+<h2><a name="osgi-dp:package"></a>osgi-dp:package</h2>
+      
+<p><b>Full name</b>:</p>
+      
+<p>de.dentrassi.maven:osgi-dp:0.3.0:package</p>
+      
+<p><b>Description</b>:</p>
+      
+<div>Build this project as an OSGi distribution package 
+
+<p><b>Note:</b> Use the packaging type <tt>dp</tt>
+instead of directly configuring this mojo.</p>
+
+<p>Be sure to add this plugin as an extension:</p>
+<tt>&amp;lt;plugins&amp;gt; &amp;lt;plugin&amp;gt;
+&amp;lt;groupId&gt;de.dentrassi.maven&amp;lt;/groupId&amp;gt;
+&amp;lt;artifactId&gt;osgi-dp&amp;lt;/artifactId&amp;gt;
+&amp;lt;extensions&gt;true&amp;lt;/extensions&amp;gt;
+&amp;lt;/plugin&amp;gt; &amp;lt;/plugins&amp;gt;</tt> 
+
+<p>This project takes the dependencies of this project and build an
+OSGi DP from it.</p></div>
+      
+<p><b>Attributes</b>:</p>
+      
+<ul>
+        
+<li>Requires a Maven project to be executed.</li>
+        
+<li>Requires dependency resolution of artifacts in scope: <tt>runtime</tt>.</li>
+        
+<li>Requires dependency collection of artifacts in scope: <tt>runtime</tt>.</li>
+        
+<li>Since version: <tt>0.3.0</tt>.</li>
+        
+<li>Binds by default to the <a class="externalLink" href="http://maven.apache.org/ref/current/maven-core/lifecycles.html">lifecycle phase</a>: <tt>package</tt>.</li>
+      </ul>
+      
 <div class="section">
-<h2><a name="Web_Browser_Access"></a>Web Browser Access</h2><a name="Web_Browser_Access"></a>
-<p>The following is a link to a browsable version of the source repository:</p>
-<div class="source"><pre class="prettyprint"><a class="externalLink" href="https://github.com/ctron/osgi-dp">https://github.com/ctron/osgi-dp</a></pre></div></div>
+<h3><a name="Optional_Parameters"></a>Optional Parameters</h3>
+        
+<table class="table table-striped" border="0">
+          
+<tr class="a">
+            
+<th>Name</th>
+            
+<th>Type</th>
+            
+<th>Since</th>
+            
+<th>Description</th>
+          </tr>
+          
+<tr class="b">
+            
+<td><b><a href="#additionalDependencies">additionalDependencies</a></b></td>
+            
+<td><tt>Dependency[]</tt></td>
+            
+<td><tt>0.3.0</tt></td>
+            
+<td>Additional dependencies to package<br /></td>
+          </tr>
+          
+<tr class="a">
+            
+<td><b><a href="#skip">skip</a></b></td>
+            
+<td><tt>boolean</tt></td>
+            
+<td><tt>0.3.0</tt></td>
+            
+<td>Skip the generation of the DP<br /><b>Default value is</b>: <tt>false</tt>.<br /><b>User property is</b>: <tt>osgi-dp.skip</tt>.</td>
+          </tr>
+          
+<tr class="b">
+            
+<td><b><a href="#useQualifiedFilename">useQualifiedFilename</a></b></td>
+            
+<td><tt>boolean</tt></td>
+            
+<td><tt>0.3.0</tt></td>
+            
+<td>Whether or not to use a qualified target filename 
+
+<p>By default the project version will be used as filename. If this
+property is set to <tt>true</tt> then the qualified OSGi
+version will be used.</p><br /><b>Default value is</b>: <tt>false</tt>.<br /></td>
+          </tr>
+          
+<tr class="a">
+            
+<td><b><a href="#version">version</a></b></td>
+            
+<td><tt>String</tt></td>
+            
+<td><tt>0.3.0</tt></td>
+            
+<td>An optional explicit version 
+
+<p><b>Note:</b> This version must be a valid OSGi
+version</p>
+
+<p>By default the version of the project will be used. The
+-SNAPSHOT suffix will be replaced by the current timestamp.</p><br /><b>User property is</b>: <tt>version</tt>.</td>
+          </tr>
+        </table>
+      </div>
+      
 <div class="section">
-<h2><a name="Anonymous_Access"></a>Anonymous Access</h2><a name="Anonymous_Access"></a>
-<p>The source can be checked out anonymously from Git with this command (See <a class="externalLink" href="http://git-scm.com/docs/git-clone">http://git-scm.com/docs/git-clone</a>):</p>
-<div class="source"><pre class="prettyprint">$ git clone --branch osgi-dp-0.3.0 git://github.com/ctron/osgi-dp.git</pre></div></div>
-<div class="section">
-<h2><a name="Developer_Access"></a>Developer Access</h2><a name="Developer_Access"></a>
-<p>Only project developers can access the Git tree via this method (See <a class="externalLink" href="http://git-scm.com/docs/git-clone">http://git-scm.com/docs/git-clone</a>).</p>
-<div class="source"><pre class="prettyprint">$ git clone --branch osgi-dp-0.3.0 git@github.com:ctron/osgi-dp.git</pre></div></div>
-<div class="section">
-<h2><a name="Access_from_Behind_a_Firewall"></a>Access from Behind a Firewall</h2><a name="Access_from_Behind_a_Firewall"></a>
-<p>Refer to the documentation of the SCM used for more information about access behind a firewall.</p></div>
+<h3><a name="Parameter_Details"></a>Parameter Details</h3>
+        
+<p><b><a name="additionalDependencies">additionalDependencies</a>:</b></p>
+        
+<div>Additional dependencies to package</div>
+        
+<ul>
+          
+<li><b>Type</b>: <tt>org.apache.maven.model.Dependency[]</tt></li>
+          
+<li><b>Since</b>: <tt>0.3.0</tt></li>
+          
+<li><b>Required</b>: <tt>No</tt></li>
+        </ul><hr />
+<p><b><a name="skip">skip</a>:</b></p>
+        
+<div>Skip the generation of the DP</div>
+        
+<ul>
+          
+<li><b>Type</b>: <tt>boolean</tt></li>
+          
+<li><b>Since</b>: <tt>0.3.0</tt></li>
+          
+<li><b>Required</b>: <tt>No</tt></li>
+          
+<li><b>User Property</b>: <tt>osgi-dp.skip</tt></li>
+          
+<li><b>Default</b>: <tt>false</tt></li>
+        </ul><hr />
+<p><b><a name="useQualifiedFilename">useQualifiedFilename</a>:</b></p>
+        
+<div>Whether or not to use a qualified target filename 
+
+<p>By default the project version will be used as filename. If this
+property is set to <tt>true</tt> then the qualified OSGi
+version will be used.</p></div>
+        
+<ul>
+          
+<li><b>Type</b>: <tt>boolean</tt></li>
+          
+<li><b>Since</b>: <tt>0.3.0</tt></li>
+          
+<li><b>Required</b>: <tt>No</tt></li>
+          
+<li><b>Default</b>: <tt>false</tt></li>
+        </ul><hr />
+<p><b><a name="version">version</a>:</b></p>
+        
+<div>An optional explicit version 
+
+<p><b>Note:</b> This version must be a valid OSGi
+version</p>
+
+<p>By default the version of the project will be used. The
+-SNAPSHOT suffix will be replaced by the current timestamp.</p></div>
+        
+<ul>
+          
+<li><b>Type</b>: <tt>java.lang.String</tt></li>
+          
+<li><b>Since</b>: <tt>0.3.0</tt></li>
+          
+<li><b>Required</b>: <tt>No</tt></li>
+          
+<li><b>User Property</b>: <tt>version</tt></li>
+        </ul>
+      </div>
+    </div>
+  
+
                   </div>
             </div>
           </div>
