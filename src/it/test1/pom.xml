@@ -1,0 +1,88 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	
+	<groupId>de.dentrassi.maven.osgi.dp</groupId>
+	<artifactId>test1-parent</artifactId>
+	<version>1.0.0-SNAPSHOT</version>
+	<packaging>pom</packaging>
+
+	<properties>
+		<tycho-version>0.25.0</tycho-version>
+		<tycho-extras-version>0.25.0</tycho-extras-version>
+	</properties>
+
+	<modules>
+		<module>test1-bundle1</module>
+		<module>test1-feature1</module>
+		<module>test1-feature2</module>
+		<module>test1-feature3</module>
+	</modules>
+
+	<repositories>
+		<repository>
+			<id>eclipse.neon</id>
+			<url>http://download.eclipse.org/releases/neon</url>
+			<layout>p2</layout>
+		</repository>
+	</repositories>
+
+	<build>
+		<pluginManagement>
+			<plugins>
+				<plugin>
+					<groupId>de.dentrassi.maven</groupId>
+					<artifactId>osgi-dp</artifactId>
+					<version>@project.version@</version>
+				</plugin>
+			</plugins>
+		</pluginManagement>
+		<plugins>
+			<plugin>
+				<groupId>org.eclipse.tycho</groupId>
+				<artifactId>tycho-maven-plugin</artifactId>
+				<version>${tycho-version}</version>
+				<extensions>true</extensions>
+			</plugin>
+
+			<plugin>
+				<groupId>org.eclipse.tycho</groupId>
+				<artifactId>tycho-packaging-plugin</artifactId>
+				<version>${tycho-version}</version>
+				<dependencies>
+					<dependency>
+						<groupId>org.eclipse.tycho.extras</groupId>
+						<artifactId>tycho-buildtimestamp-jgit</artifactId>
+						<version>${tycho-extras-version}</version>
+					</dependency>
+					<dependency>
+						<groupId>org.eclipse.tycho.extras</groupId>
+						<artifactId>tycho-sourceref-jgit</artifactId>
+						<version>${tycho-extras-version}</version>
+					</dependency>
+				</dependencies>
+			</plugin>
+
+			<plugin>
+				<groupId>org.eclipse.tycho</groupId>
+				<artifactId>target-platform-configuration</artifactId>
+				<version>${tycho-version}</version>
+				<configuration>
+					<environments>
+						<environment>
+							<os>all</os>
+							<ws>all</ws>
+							<arch>all</arch>
+						</environment>
+						<environment>
+							<os>linux</os>
+							<ws>all</ws>
+							<arch>all</arch>
+						</environment>
+					</environments>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
+
+</project>
