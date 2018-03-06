@@ -31,16 +31,16 @@ import org.apache.maven.plugins.annotations.ResolutionScope;
  * <p>
  * Be sure to add this plugin as an extension:
  * </p>
- * {@code &lt;plugins&gt;
-    &lt;plugin&gt;
-        &lt;groupId>de.dentrassi.maven&lt;/groupId&gt;
-        &lt;artifactId>osgi-dp&lt;/artifactId&gt;
-        &lt;extensions>true&lt;/extensions&gt;
-    &lt;/plugin&gt;
-&lt;/plugins&gt;}
+ * {@code <plugins>
+    <plugin>
+        <groupId>de.dentrassi.maven</groupId>
+        <artifactId>osgi-dp</artifactId>
+        <extensions>true</extensions>
+    </plugin>
+</plugins>}
  * <p>
- * This project takes the dependencies of this project and build an OSGi DP from
- * it.
+ * This project takes the dependencies of this project and builds an OSGi DP
+ * from it.
  * </p>
  *
  * @author Jens Reimann

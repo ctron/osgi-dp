@@ -29,8 +29,8 @@
 		<url>https://github.com/ctron/osgi-dp</url>
 		<connection>scm:git:git://github.com/ctron/osgi-dp.git</connection>
 		<developerConnection>scm:git:git@github.com:ctron/osgi-dp.git</developerConnection>
-	  <tag>HEAD</tag>
-  </scm>
+		<tag>HEAD</tag>
+	</scm>
 
 	<issueManagement>
 		<url>https://github.com/ctron/osgi-dp/issues</url>

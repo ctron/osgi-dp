@@ -228,27 +228,31 @@ public abstract class AbstractDpMojo extends AbstractMojo {
 
     protected void fillfromExtraDependencies(final Manifest manifest, final Map<String, File> files)
             throws IOException, MojoExecutionException {
-        if (this.additionalDependencies != null) {
-            try {
-                final Collection<ArtifactRequest> requests = new ArrayList<>(this.additionalDependencies.length);
 
-                for (final Dependency dep : this.additionalDependencies) {
-                    final DefaultArtifact art = new DefaultArtifact(dep.getGroupId(), dep.getArtifactId(),
-                            dep.getClassifier(), dep.getType(), dep.getVersion());
-                    final org.eclipse.aether.graph.Dependency adep = new org.eclipse.aether.graph.Dependency(art,
-                            JavaScopes.RUNTIME);
-                    requests.add(new ArtifactRequest(new DefaultDependencyNode(adep)));
-                }
+        if (this.additionalDependencies == null) {
+            // no additional dependencies
+            return;
+        }
 
-                final List<ArtifactResult> result = this.resolver.resolveArtifacts(this.repositorySession, requests);
+        try {
+            final Collection<ArtifactRequest> requests = new ArrayList<>(this.additionalDependencies.length);
 
-                for (final ArtifactResult ares : result) {
-                    getLog().debug("Additional dependency: " + ares);
-                    processArtifact(manifest, files, ares.getArtifact().getFile());
-                }
-            } catch (final ArtifactResolutionException e) {
-                throw new MojoExecutionException("Failed to resolve additional dependencies", e);
+            for (final Dependency dep : this.additionalDependencies) {
+                final DefaultArtifact art = new DefaultArtifact(dep.getGroupId(), dep.getArtifactId(),
+                        dep.getClassifier(), dep.getType(), dep.getVersion());
+                final org.eclipse.aether.graph.Dependency adep = new org.eclipse.aether.graph.Dependency(art,
+                        JavaScopes.RUNTIME);
+                requests.add(new ArtifactRequest(new DefaultDependencyNode(adep)));
             }
+
+            final List<ArtifactResult> result = this.resolver.resolveArtifacts(this.repositorySession, requests);
+
+            for (final ArtifactResult ares : result) {
+                getLog().debug("Additional dependency: " + ares);
+                processArtifact(manifest, files, ares.getArtifact().getFile());
+            }
+        } catch (final ArtifactResolutionException e) {
+            throw new MojoExecutionException("Failed to resolve additional dependencies", e);
         }
     }
 
