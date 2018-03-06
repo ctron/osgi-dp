@@ -19,12 +19,32 @@ Add the following plugin as an extension to you build:
 And then specify the packaging type for your Maven project:
 
 	<packaging>dp</packaging>
-	
+
 This will skip the default Maven lifecycle and simply build the DP during the `package` phase. It will
 attach the resulting DP as main artifact. In contrast to the "secondary output" variant of this bundle,
 also the declared dependencies of this project will be included in the final package.   
-  
+
 ## As secondary output
+
+Add the following execution to project in order to build a DP:
+
+	<plugins>
+		…
+			<plugin>
+				<groupId>de.dentrassi.maven</groupId>
+				<artifactId>osgi-dp</artifactId>
+				<executions>
+					<execution>
+						<goals>
+							<goal>bundle</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+		…
+	</plugins>
+
+## As secondary output with Tycho
 
 Add the following execution to project in order to build a DP:
 
@@ -56,6 +76,3 @@ Referenced bundles and features will be ignored.
 Adding the `build` goal to an `eclipse-plugin` type project will create a DP based on the current bundle.
 No dependencies will be added, unless they are adding using the "additional dependencies" feature. 
 
-### Maven Bundle Plugin
-
-Adding the `build` goal to an `bundle` type project (maven-bundle-plugin) will create a DP like using the `eclipse-plugin` target. Only it is not possible to use a qualified filename as output.

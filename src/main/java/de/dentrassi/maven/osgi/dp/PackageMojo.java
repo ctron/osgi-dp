@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2016 Jens Reimann
+ * Copyright (c) 2016, 2018 Jens Reimann
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -23,7 +23,7 @@ import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.ResolutionScope;
 
 /**
- * Build this project as an OSGi distribution package
+ * Build this project as an OSGi distribution package.
  * <p>
  * <strong>Note:</strong> Use the packaging type <code>dp</code> instead of
  * directly configuring this mojo.
