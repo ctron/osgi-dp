@@ -13,7 +13,9 @@ package de.dentrassi.maven.osgi.dp;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 import java.util.jar.Manifest;
 
 import org.apache.maven.artifact.Artifact;
@@ -27,7 +29,9 @@ import org.apache.maven.plugins.annotations.ResolutionScope;
  * Build this project as an OSGi distribution package.
  * <p>
  * This project takes the main attachment and the dependencies of this project
- * and builds an OSGi DP from it.
+ * and builds an OSGi DP from it. By default only direct {@code compile} and
+ * {@code runtime} dependencies will be added to the package. All extra
+ * dependencies will be included.
  * </p>
  *
  * @author Jens Reimann
@@ -55,6 +59,12 @@ public class BundleMojo extends AbstractDpMojo {
     @Parameter(defaultValue = "false")
     protected boolean ignoreProjectDependecies = false;
 
+    /**
+     * The set of scopes for dependencies which will be included in the DP
+     */
+    @Parameter(defaultValue = "compile,runtime")
+    protected Set<String> includedScopes = new HashSet<>();
+
     @Override
     protected void attach(final Path out) {
         if (!this.attach) {
@@ -72,7 +82,11 @@ public class BundleMojo extends AbstractDpMojo {
 
         if (!this.ignoreProjectDependecies) {
             for (final Artifact art : this.project.getDependencyArtifacts()) {
-                processArtifact(manifest, files, art.getFile());
+
+                final String scope = art.getScope();
+                if (this.includedScopes.contains(scope)) {
+                    processArtifact(manifest, files, art.getFile());
+                }
             }
         }
 
