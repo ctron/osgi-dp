@@ -9,7 +9,7 @@
  *     Jens Reimann <jreimann@redhat.com> - initial API and implementation
  *******************************************************************************/
 
-def zipFile = new java.util.zip.ZipFile(new File(basedir, "target/test2.bundle1_1.0.0-SNAPSHOT.dp"))
+def zipFile = new java.util.zip.ZipFile(new File(basedir, "test1-feature1/target/test1.feature1_1.0.0-SNAPSHOT.dp"))
 
 def entries = new HashSet<String>();
 zipFile
@@ -23,6 +23,8 @@ println("Found: " + entries)
 return entries.equals(
         [
             "META-INF/MANIFEST.MF",
-            "test2.bundle1_1.0.0.jar"
+            "test1.bundle1_1.0.0.jar",
+            "com.google.gson_2.2.4.v201311231704.jar",
+            "ch.qos.logback.core_1.0.7.v20121108-1250.jar"
         ]
         .toSet());
