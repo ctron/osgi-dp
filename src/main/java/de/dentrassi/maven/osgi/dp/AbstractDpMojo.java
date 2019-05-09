@@ -7,6 +7,7 @@
  *
  * Contributors:
  *     Jens Reimann <jreimann@redhat.com> - initial API and implementation
+ *     Cristiano De Alti <cristiano.dealti@eurotech.com>
  *******************************************************************************/
 package de.dentrassi.maven.osgi.dp;
 
@@ -23,8 +24,8 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -177,7 +178,7 @@ public abstract class AbstractDpMojo extends AbstractMojo {
         dpmf.getMainAttributes().putValue("DeploymentPackage-Version", dpVersion);
 
         try {
-            final Map<String, File> files = new HashMap<>();
+            final Map<String, File> files = new LinkedHashMap<>();
 
             fillFromDependencies(dpmf, files);
 
