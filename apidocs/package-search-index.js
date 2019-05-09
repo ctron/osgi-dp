@@ -1,0 +1,1 @@
+packageSearchIndex = [{"l":"All Packages","url":"allpackages-index.html"},{"l":"de.dentrassi.maven.osgi.dp"},{"l":"de.dentrassi.maven.osgi.dp.internal"}]
