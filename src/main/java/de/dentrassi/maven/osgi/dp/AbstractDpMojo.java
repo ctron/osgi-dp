@@ -13,14 +13,16 @@ package de.dentrassi.maven.osgi.dp;
 
 import static java.lang.String.format;
 
+import com.google.common.io.ByteStreams;
+import de.dentrassi.maven.osgi.dp.internal.ArtifactWalker;
+import de.dentrassi.maven.osgi.dp.internal.ProjectWalker;
+import de.dentrassi.maven.osgi.dp.internal.TychoWalker;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -34,7 +36,6 @@ import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 import java.util.jar.JarOutputStream;
 import java.util.jar.Manifest;
-
 import org.apache.maven.artifact.repository.ArtifactRepository;
 import org.apache.maven.execution.MavenSession;
 import org.apache.maven.model.Dependency;
@@ -59,15 +60,7 @@ import org.eclipse.tycho.core.DependencyResolver;
 import org.eclipse.tycho.core.TychoProject;
 import org.osgi.framework.Version;
 
-import com.google.common.io.ByteStreams;
-
-import de.dentrassi.maven.osgi.dp.internal.ArtifactWalker;
-import de.dentrassi.maven.osgi.dp.internal.ProjectWalker;
-import de.dentrassi.maven.osgi.dp.internal.TychoWalker;
-
 public abstract class AbstractDpMojo extends AbstractMojo {
-
-    private static final DateFormat TIMESTAMP_FORMAT = new SimpleDateFormat("yyyyMMddHHmmss");
 
     /**
      * The maven project
@@ -324,7 +317,7 @@ public abstract class AbstractDpMojo extends AbstractMojo {
 
         String version = this.project.getVersion();
         if (version.endsWith("-SNAPSHOT")) {
-            version = version.replaceAll("-SNAPSHOT$", "." + TIMESTAMP_FORMAT.format(this.session.getStartTime()));
+            version = version.replaceAll("-SNAPSHOT$", "." + this.session.getStartTime().toInstant().getEpochSecond());
         }
 
         return new Version(version);
