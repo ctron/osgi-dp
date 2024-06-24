@@ -13,6 +13,10 @@ package de.dentrassi.maven.osgi.dp;
 
 import static java.lang.String.format;
 
+import com.google.common.io.ByteStreams;
+import de.dentrassi.maven.osgi.dp.internal.ArtifactWalker;
+import de.dentrassi.maven.osgi.dp.internal.ProjectWalker;
+import de.dentrassi.maven.osgi.dp.internal.TychoWalker;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -28,13 +32,15 @@ import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
+import java.util.Properties;
 import java.util.Set;
 import java.util.jar.Attributes;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 import java.util.jar.JarOutputStream;
 import java.util.jar.Manifest;
-
+import java.util.regex.Pattern;
 import org.apache.maven.artifact.repository.ArtifactRepository;
 import org.apache.maven.execution.MavenSession;
 import org.apache.maven.model.Dependency;
@@ -58,12 +64,6 @@ import org.eclipse.tycho.ReactorProject;
 import org.eclipse.tycho.core.DependencyResolver;
 import org.eclipse.tycho.core.TychoProject;
 import org.osgi.framework.Version;
-
-import com.google.common.io.ByteStreams;
-
-import de.dentrassi.maven.osgi.dp.internal.ArtifactWalker;
-import de.dentrassi.maven.osgi.dp.internal.ProjectWalker;
-import de.dentrassi.maven.osgi.dp.internal.TychoWalker;
 
 public abstract class AbstractDpMojo extends AbstractMojo {
 
@@ -138,6 +138,9 @@ public abstract class AbstractDpMojo extends AbstractMojo {
      */
     @Parameter(property = "version")
     private String version;
+
+    @Parameter(property = "versionPartsSubstitutions")
+    private Properties versionPartsSubstitutions;
 
     public AbstractDpMojo() {
         super();
@@ -322,7 +325,16 @@ public abstract class AbstractDpMojo extends AbstractMojo {
             getLog().debug("Failed to get qualified tycho version", e);
         }
 
-        String version = this.project.getVersion();
+
+        String version = Optional.ofNullable(versionPartsSubstitutions)
+                .orElseGet(Properties::new)
+                .entrySet()
+                .stream()
+                .reduce(
+                        this.project.getVersion(),
+                        (aVersion, substitution) -> aVersion.replaceAll(Pattern.quote(String.valueOf(substitution.getKey())), String.valueOf(substitution.getValue())),
+                        (v1, v2) -> v2);
+
         if (version.endsWith("-SNAPSHOT")) {
             version = version.replaceAll("-SNAPSHOT$", "." + TIMESTAMP_FORMAT.format(this.session.getStartTime()));
         }
