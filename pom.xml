@@ -382,7 +382,7 @@
 								<pomInclude>*/pom.xml</pomInclude>
 							</pomIncludes>
 							<extraArtifacts>
-								<extraArtifact>ch.qos.logback:logback-classic:1.1.7</extraArtifact>
+								<extraArtifact>ch.qos.logback:logback-classic:1.2.13</extraArtifact>
 							</extraArtifacts>
 						</configuration>
 						<executions>
