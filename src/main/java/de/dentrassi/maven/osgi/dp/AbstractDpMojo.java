@@ -47,6 +47,7 @@ import org.apache.maven.project.MavenProject;
 import org.apache.maven.project.MavenProjectHelper;
 import org.eclipse.aether.RepositorySystem;
 import org.eclipse.aether.RepositorySystemSession;
+import org.eclipse.aether.artifact.Artifact;
 import org.eclipse.aether.artifact.DefaultArtifact;
 import org.eclipse.aether.graph.DefaultDependencyNode;
 import org.eclipse.aether.repository.RemoteRepository;
@@ -237,7 +238,13 @@ public abstract class AbstractDpMojo extends AbstractMojo {
 
             for (final ArtifactResult ares : result) {
                 getLog().debug("Additional dependency: " + ares);
-                processArtifact(manifest, files, ares.getArtifact().getFile());
+                Artifact artifact = ares.getArtifact();
+                File file = artifact.getFile();
+                if (file == null) {
+                    getLog().info("Skipping " + artifact + " because it has no file");
+                    return;
+                }
+                processArtifact(manifest, files, artifact.getFile());
             }
         } catch (final ArtifactResolutionException e) {
             throw new MojoExecutionException("Failed to resolve additional dependencies", e);

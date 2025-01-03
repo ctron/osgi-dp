@@ -61,7 +61,12 @@ public class PackageMojo extends AbstractDpMojo {
         super.fillFromDependencies(manifest, files);
 
         for (final Artifact art : this.project.getDependencyArtifacts()) {
-            processArtifact(manifest, files, art.getFile());
+            File file = art.getFile();
+            if (file == null) {
+                getLog().info("Skipping " + art + " because it has no file");
+                return;
+            }
+            processArtifact(manifest, files, file);
         }
     }
 }
