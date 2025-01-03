@@ -85,7 +85,12 @@ public class BundleMojo extends AbstractDpMojo {
 
                 final String scope = art.getScope();
                 if (this.includedScopes.contains(scope)) {
-                    processArtifact(manifest, files, art.getFile());
+                    File file = art.getFile();
+                    if (file == null) {
+                        getLog().info("Skipping " + art + " because it has no file");
+                        return;
+                    }
+                    processArtifact(manifest, files, file);
                 }
             }
         }
