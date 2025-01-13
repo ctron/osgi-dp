@@ -33,4 +33,4 @@ jobs:
       run: mvn -B test
 
     - name: Run integration tests
-      run: mvn -B verify -Pits
+      run: mvn -B verify -Pits -Dinvoker.streamLogs
